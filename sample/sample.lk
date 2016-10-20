@@ -1,0 +1,18 @@
+target('all', 'sample/build/app.lib')
+
+include('./sample.compile.lk')
+
+rule('sample/build', {}, function()
+  print('Creating build directory...')
+  fs.mkdirp('sample/build')
+end)
+
+rule('sample/build/a.o', { 'sample/src/a.c', 'sample/build' }, function(target)
+  print('Compiling ' .. target .. '...')
+  exec('touch ' .. target)
+end)
+
+rule('sample/build/app.lib', { 'sample/build/a.o', 'sample/build/b.o', 'sample/build/c.o', 'sample/build' }, function(target)
+  print('Linking ' .. target .. '...')
+  exec('touch ' .. target)
+end)
