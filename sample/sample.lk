@@ -1,6 +1,6 @@
 target('all', 'sample/build/app.lib')
 
-include('./sample.compile.lk')
+include('./compile.lk')
 
 rule('sample/build', {}, function()
   print('Creating build directory...')
