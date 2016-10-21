@@ -113,7 +113,7 @@ describe('core.build_tree', function()
                   match = 'qux-match',
                   rule = rules[4],
                   deps = {}
-                },
+                }
               }
             }
           }
