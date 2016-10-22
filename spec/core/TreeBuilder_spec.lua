@@ -10,6 +10,8 @@ describe('core.TreeBuilder', function()
   local baz_builder = mach.mock_function('baz_builder')
   local qux_builder = mach.mock_function('qux_builder')
 
+  local rules
+
   local function nothing_should_happen()
     return mach.mock_function():may_be_called()
   end
