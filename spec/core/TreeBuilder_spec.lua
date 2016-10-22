@@ -1,5 +1,7 @@
-describe('core.build_tree', function()
-  local build_tree = require 'core.build_tree'
+describe('core.TreeBuilder', function()
+  local build = require 'core.TreeBuilder'({
+    schedule = function(job) job() end
+  }).build
 
   local mach = require 'deps/mach'
 
@@ -7,8 +9,6 @@ describe('core.build_tree', function()
   local bar_builder = mach.mock_function('bar_builder')
   local baz_builder = mach.mock_function('baz_builder')
   local qux_builder = mach.mock_function('qux_builder')
-
-  local rules
 
   local function nothing_should_happen()
     return mach.mock_function():may_be_called()
@@ -25,7 +25,7 @@ describe('core.build_tree', function()
 
   it('should do nothing for a completed tree', function()
     nothing_should_happen():when(function()
-      build_tree({
+      build({
         target = 'foo',
         match = 'foo-match',
         complete = true,
@@ -37,7 +37,7 @@ describe('core.build_tree', function()
 
   it('should build a tree with no dependencies', function()
     foo_builder:should_be_called_with('foo', 'foo-match'):when(function()
-      build_tree({
+      build({
         target = 'foo',
         match = 'foo-match',
         rule = rules[1],
@@ -50,7 +50,7 @@ describe('core.build_tree', function()
     bar_builder:should_be_called_with('bar', 'bar-match'):
       and_then(foo_builder:should_be_called_with('foo', 'foo-match')):
       when(function()
-        build_tree({
+        build({
           target = 'foo',
           match = 'foo-match',
           rule = rules[1],
@@ -71,7 +71,7 @@ describe('core.build_tree', function()
       and_also(baz_builder:should_be_called_with('baz', 'baz-match')):
       and_then(foo_builder:should_be_called_with('foo', 'foo-match')):
       when(function()
-        build_tree({
+        build({
           target = 'foo',
           match = 'foo-match',
           rule = rules[1],
@@ -98,7 +98,7 @@ describe('core.build_tree', function()
       and_then(baz_builder:should_be_called_with('baz', 'baz-match')):
       and_then(foo_builder:should_be_called_with('foo', 'foo-match')):
       when(function()
-        build_tree({
+        build({
           target = 'foo',
           match = 'foo-match',
           rule = rules[1],
@@ -134,7 +134,7 @@ describe('core.build_tree', function()
       and_also(baz_builder:should_be_called_with('baz', 'baz-match')):
       and_then(foo_builder:should_be_called_with('foo', 'foo-match')):
       when(function()
-        build_tree({
+        build({
           target = 'foo',
           match = 'foo-match',
           rule = rules[1],
