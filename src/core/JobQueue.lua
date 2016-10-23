@@ -13,6 +13,7 @@ return function(max_concurrent)
       local next = jobs[head]
       head = head + 1
       count = count - 1
+      running = running + 1
       execute_job(next)
     end
   end

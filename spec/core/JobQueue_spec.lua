@@ -73,4 +73,34 @@ describe('core.JobQueue', function()
         complete_job(1)
       end)
   end)
+
+  it('should allow jobs to be added once execution has begun', function()
+    local job_queue = JobQueue(2)
+
+    mocks[1]:should_be_called():
+      and_then(mocks[2]:should_be_called()):
+      when(function()
+        job_queue.schedule(jobs[1])
+        job_queue.schedule(jobs[2])
+        job_queue.schedule(jobs[3])
+        job_queue.schedule(jobs[4])
+      end)
+
+    mocks[3]:should_be_called():
+      when(function()
+        complete_job(2)
+      end)
+
+    job_queue.schedule(jobs[5], true)
+
+    mocks[4]:should_be_called():
+      when(function()
+        complete_job(3)
+      end)
+
+    mocks[5]:should_be_called():
+      when(function()
+        complete_job(1)
+      end)
+  end)
 end)
