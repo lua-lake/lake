@@ -1,9 +1,11 @@
 return function(args)
   local RuleSet = require './src/core/RuleSet'
   local Tree = require './src/core/Tree'
-  local build_tree = require './src/core/build_tree'
+  local TreeBuilder = require './src/core/TreeBuilder'
+  local JobQueue = require './src/core/JobQueue'
 
   local rule_set = RuleSet()
+  local job_queue = JobQueue(2)
 
   if not args[1] then
     print('usage: lake <lakefile> [<target>]')
@@ -23,7 +25,7 @@ return function(args)
         print('nothing to be done for target "' .. target .. '"')
       end
 
-      build_tree(tree)
+      TreeBuilder(job_queue).build(tree)
     end)()
   end
 
