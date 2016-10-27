@@ -1,4 +1,6 @@
 rule('sample/build/*.o', { 'sample/src/*.c', 'sample/build' }, function(args)
   print('Compiling ' .. args.target .. ' with generic rule...')
   exec('touch ' .. args.target)
+  exec('sleep 1')
+  print('Finished compiling ' .. args.target)
 end)
