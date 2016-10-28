@@ -51,8 +51,10 @@ return function(target, rules)
             end
             all_deps_complete = all_deps_complete and sub_tree.complete
             table.insert(tree.deps, sub_tree)
-          elseif not target_exists or is_before(target_mtime, mtime(dep)) then
-            out_of_date = true
+          else
+            if not target_exists or is_before(target_mtime, mtime(dep)) then
+              out_of_date = true
+            end
           end
         end
 

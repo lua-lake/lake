@@ -49,7 +49,7 @@ return function(args)
     }, {
       __index = _G
     }))()
-  end)()
 
-  run(args[2] or 'all')
+    run(args[2] or 'all')
+  end)()
 end
