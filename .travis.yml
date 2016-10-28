@@ -7,7 +7,7 @@ install:
 - lenv install-lj 2.0.4
 - lenv use-lj 2.0.4
 - luarocks install busted
-- lit install
+- ./lit install
 
 script:
 - busted
