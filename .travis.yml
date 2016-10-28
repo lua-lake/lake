@@ -1,5 +1,9 @@
 language: c
 
+branches:
+  only:
+    - "master"
+
 install:
 - curl -L https://github.com/luvit/lit/raw/master/get-lit.sh | sh
 - curl -L http://git.io/lenv | perl
