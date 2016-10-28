@@ -40,9 +40,9 @@ describe('core.Tree', function()
 
   it('should create a completed tree when the target exists and is up-to-date', function()
     files = {
-      foo = { mtime = { sec = 3, nsec = 0 } },
-      bar = { mtime = { sec = 2, nsec = 0 } },
-      baz = { mtime = { sec = 2, nsec = 0 } }
+      foo = { mtime = { sec = 3, nsec = 0 }, type = 'file' },
+      bar = { mtime = { sec = 2, nsec = 0 }, type = 'file' },
+      baz = { mtime = { sec = 2, nsec = 0 }, type = 'file' }
     }
 
     local rules = {
@@ -62,11 +62,32 @@ describe('core.Tree', function()
     }, tree)
   end)
 
+  it('should consider a target to be up-to-date if it is older than a dependency that is a directory', function()
+    files = {
+      foo = { mtime = { sec = 3, nsec = 0 }, type = 'file' },
+      bar = { mtime = { sec = 4, nsec = 0 }, type = 'directory' }
+    }
+
+    local rules = {
+      { target = 'foo', deps = { 'bar' } }
+    }
+
+    local tree = Tree('foo', rules)
+
+    assert.are_same({
+      target = 'foo',
+      match = 'foo',
+      complete = true,
+      rule = rules[1],
+      deps = {}
+    }, tree)
+  end)
+
   it('should create an incomplete tree when the target exists but is not up-to-date', function()
     files = {
-      foo = { mtime = { sec = 1, nsec = 0 } },
-      bar = { mtime = { sec = 2, nsec = 0 } },
-      baz = { mtime = { sec = 2, nsec = 0 } }
+      foo = { mtime = { sec = 1, nsec = 0 }, type = 'file' },
+      bar = { mtime = { sec = 2, nsec = 0 }, type = 'file' },
+      baz = { mtime = { sec = 2, nsec = 0 }, type = 'file' }
     }
 
     local rules = {
@@ -87,10 +108,10 @@ describe('core.Tree', function()
 
   it('should create an incomplete tree when the target exists but is not up-to-date do to an indirect dependency', function()
     files = {
-      foo = { mtime = { sec = 4, nsec = 0 } },
-      bar = { mtime = { sec = 2, nsec = 0 } },
-      baz = { mtime = { sec = 2, nsec = 0 } },
-      qux = { mtime = { sec = 3, nsec = 0 } },
+      foo = { mtime = { sec = 4, nsec = 0 }, type = 'file' },
+      bar = { mtime = { sec = 2, nsec = 0 }, type = 'file' },
+      baz = { mtime = { sec = 2, nsec = 0 }, type = 'file' },
+      qux = { mtime = { sec = 3, nsec = 0 }, type = 'file' },
     }
 
     local rules = {
@@ -119,9 +140,9 @@ describe('core.Tree', function()
 
   it('should create an incomplete tree when the target exists but is not up-to-date due to nanoseconds', function()
     files = {
-      foo = { mtime = { sec = 2, nsec = 0 } },
-      bar = { mtime = { sec = 2, nsec = 1 } },
-      baz = { mtime = { sec = 2, nsec = 1 } }
+      foo = { mtime = { sec = 2, nsec = 0 }, type = 'file' },
+      bar = { mtime = { sec = 2, nsec = 1 }, type = 'file' },
+      baz = { mtime = { sec = 2, nsec = 1 }, type = 'file' }
     }
 
     local rules = {
@@ -142,8 +163,8 @@ describe('core.Tree', function()
 
   it('should create an incomplete tree when the target does not exist', function()
     files = {
-      bar = { mtime = { sec = 2, nsec = 0 } },
-      baz = { mtime = { sec = 2, nsec = 0 } }
+      bar = { mtime = { sec = 2, nsec = 0 }, type = 'file' },
+      baz = { mtime = { sec = 2, nsec = 0 }, type = 'file' }
     }
 
     local rules = {
@@ -164,8 +185,8 @@ describe('core.Tree', function()
 
   it('should create a completed tree when the target does not exist but is phony', function()
     files = {
-      bar = { mtime = { sec = 2, nsec = 0 } },
-      baz = { mtime = { sec = 2, nsec = 0 } }
+      bar = { mtime = { sec = 2, nsec = 0 }, type = 'file' },
+      baz = { mtime = { sec = 2, nsec = 0 }, type = 'file' }
     }
 
     local rules = {
@@ -187,8 +208,8 @@ describe('core.Tree', function()
 
   it('should create an incomplete tree when a dependency does not exist', function()
     files = {
-      foo = { mtime = { sec = 3, nsec = 0 } },
-      baz = { mtime = { sec = 2, nsec = 0 } }
+      foo = { mtime = { sec = 3, nsec = 0 }, type = 'file' },
+      baz = { mtime = { sec = 2, nsec = 0 }, type = 'file' }
     }
 
     local rules = {
@@ -216,8 +237,8 @@ describe('core.Tree', function()
 
   it('should create an incomplete tree when a dependency does not exist and the target is phony', function()
     files = {
-      foo = { mtime = { sec = 3, nsec = 0 } },
-      baz = { mtime = { sec = 2, nsec = 0 } }
+      foo = { mtime = { sec = 3, nsec = 0 }, type = 'file' },
+      baz = { mtime = { sec = 2, nsec = 0 }, type = 'file' }
     }
 
     local rules = {
@@ -277,7 +298,7 @@ describe('core.Tree', function()
 
   it('should create multi-level trees', function()
     files = {
-      quux = { mtime = { sec = 2, nsec = 0 } }
+      quux = { mtime = { sec = 2, nsec = 0 }, type = 'file' }
     }
 
     local rules = {
@@ -320,8 +341,8 @@ describe('core.Tree', function()
 
   it('should create trees with wildcard rules', function()
     files = {
-      ['a.c'] = { mtime = { sec = 2, nsec = 0 } },
-      ['b.c'] = { mtime = { sec = 2, nsec = 0 } }
+      ['a.c'] = { mtime = { sec = 2, nsec = 0 }, type = 'file' },
+      ['b.c'] = { mtime = { sec = 2, nsec = 0 }, type = 'file' }
     }
 
     local rules = {

@@ -4,6 +4,10 @@ local function exists(target)
   return fs.stat(target) ~= nil
 end
 
+local function is_directory(target)
+  return fs.stat(target).type == 'directory'
+end
+
 local function mtime(target)
   local stat = fs.stat(target)
   if stat then return stat.mtime end
@@ -51,7 +55,9 @@ return function(target, rules)
             all_deps_complete = false
             table.insert(tree.deps, sub_tree)
           elseif not target_exists or is_before(target_mtime, mtime(dep)) then
-            out_of_date = true
+            if not is_directory(dep) then
+              out_of_date = true
+            end
           end
         end
 
