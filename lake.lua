@@ -40,6 +40,7 @@ return function(args)
       map = require './src/util/map',
       set_extension = require './src/util/set_extension',
       add_prefix = require './src/util/add_prefix',
+      append = require './src/util/append',
       get_path = function(s)
         local pathjoin = require 'pathjoin'
         local parts = pathjoin.splitPath(s)
