@@ -1,5 +1,6 @@
 return function(job_queue)
   local function execute(tree)
+    print('executing ' .. tree.target)
     if not tree.complete then
       tree.rule.builder({
         target = tree.target,

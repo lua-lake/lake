@@ -29,15 +29,27 @@ return function(args)
     end)()
   end
 
-  setfenv(loadfile(args[1]), setmetatable({
-    rule = rule_set.add_rule,
-    target = rule_set.add_phony,
-    fs = require 'coro-fs',
-    exec = require './src/util/exec',
-    include = require './src/util/include'
-  }, {
-    __index = _G
-  }))()
+  coroutine.wrap(function()
+    setfenv(loadfile(args[1]), setmetatable({
+      rule = rule_set.add_rule,
+      target = rule_set.add_phony,
+      fs = require 'coro-fs',
+      exec = require './src/util/exec',
+      include = require './src/util/include',
+      files_from_directory = require './src/util/files_from_directory',
+      map = require './src/util/map',
+      set_extension = require './src/util/set_extension',
+      add_prefix = require './src/util/add_prefix',
+      get_path = function(s)
+        local pathjoin = require 'pathjoin'
+        local parts = pathjoin.splitPath(s)
+        table.remove(parts)
+        return pathjoin.pathJoin(table.unpack(parts))
+      end
+    }, {
+      __index = _G
+    }))()
+  end)()
 
   run(args[2] or 'all')
 end
