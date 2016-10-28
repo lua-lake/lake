@@ -1,13 +1,12 @@
 return function(job_queue)
   local function execute(tree)
-    print('executing ' .. tree.target)
     if not tree.complete then
+      tree.complete = true
       tree.rule.builder({
         target = tree.target,
         match = tree.match,
         deps = tree.rule.deps
       })
-      tree.complete = true
       for _, subscriber in ipairs(tree.rule.subscribers[tree.target] or {}) do
         job_queue.schedule(subscriber)
       end
