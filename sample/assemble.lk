@@ -1,0 +1,7 @@
+rule('build/*.o', { '*.s', 'build' }, function(args)
+  print('Assembling ' .. args.target .. ' with generic rule...')
+  fs.mkdirp(get_path(args.target))
+  exec('touch ' .. args.target)
+  exec('sleep 0.25')
+  print('Finished assembling ' .. args.target)
+end)

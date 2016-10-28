@@ -3,7 +3,11 @@ target('all', 'build/app.lib')
 include('./compile.lk')
 include('./assemble.lk')
 
-local sources = files_from_directory('src', { recursive = true, match = { '%.c$', '%.s$' } })
+local source_patterns = { '%.c$', '%.s$' }
+
+local sources = {}
+append(sources, files_from_directory('src', { recursive = true, match = source_patterns }))
+append(sources, files_from_directory('lib', { recursive = true, match = source_patterns }))
 sources = map(sources, set_extension('o'))
 sources = map(sources, add_prefix('build/'))
 
