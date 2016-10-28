@@ -6,7 +6,7 @@ describe('core.RuleSet', function()
     rule_set = RuleSet()
   end)
 
-  it('should start with simple_dependencies empty', function()
+  it('should start with rules empty', function()
     assert.are.same({}, rule_set.rules)
   end)
 
