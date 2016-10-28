@@ -32,8 +32,8 @@ return function(args)
     target = rule_set.add_phony,
     fs = require 'coro-fs',
     exec = require './src/util/exec',
-    include = require './src/util/include',
-    append = require './src/util/append'
+    append = require './src/util/append',
+    include = require './src/util/include'
   }, {
     __index = _G
   }))()
