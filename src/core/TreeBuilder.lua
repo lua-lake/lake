@@ -8,7 +8,7 @@ return function(job_queue)
         deps = tree.rule.deps
       })
       for _, subscriber in ipairs(tree.rule.subscribers[tree.target] or {}) do
-        job_queue.schedule(subscriber)
+        subscriber()
       end
     end
   end
@@ -38,7 +38,9 @@ return function(job_queue)
     end
 
     for _, dep in ipairs(deps_to_build) do
-      build_tree(dep)
+      job_queue.schedule(function()
+        build_tree(dep)
+      end)
     end
 
     if todo_dep_count == 0 then
