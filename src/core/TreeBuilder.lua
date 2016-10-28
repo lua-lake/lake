@@ -1,14 +1,14 @@
 return function(job_queue)
   local function execute(tree)
     if not tree.complete then
+      tree.complete = true
       tree.rule.builder({
         target = tree.target,
         match = tree.match,
         deps = tree.rule.deps
       })
-      tree.complete = true
       for _, subscriber in ipairs(tree.rule.subscribers[tree.target] or {}) do
-        job_queue.schedule(subscriber)
+        subscriber()
       end
     end
   end
@@ -38,7 +38,9 @@ return function(job_queue)
     end
 
     for _, dep in ipairs(deps_to_build) do
-      build_tree(dep)
+      job_queue.schedule(function()
+        build_tree(dep)
+      end)
     end
 
     if todo_dep_count == 0 then

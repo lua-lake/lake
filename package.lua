@@ -4,6 +4,7 @@ return {
   dependencies = {
     'creationix/coro-spawn@2.0.0',
     'creationix/coro-fs@2.2.1',
+    'creationix/pathjoin@2.0.0',
     'luvit/pretty-print@2.0.0',
     'ryanplusplus/proxyquire@1.0.2',
     'ryanplusplus/mach@1.0.7'
