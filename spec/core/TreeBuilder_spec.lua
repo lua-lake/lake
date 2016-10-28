@@ -1,7 +1,10 @@
-describe('core.build_tree', function()
-  local build_tree = require 'core.build_tree'
+describe('core.TreeBuilder', function()
+  local build = require 'core.TreeBuilder'({
+    schedule = function(job) job() end
+  }).build
 
   local mach = require 'deps/mach'
+  local match = mach.match
 
   local foo_builder = mach.mock_function('foo_builder')
   local bar_builder = mach.mock_function('bar_builder')
@@ -16,16 +19,16 @@ describe('core.build_tree', function()
 
   before_each(function()
     rules = {
-      { builder = foo_builder, subscribers = {} },
-      { builder = bar_builder, subscribers = {} },
-      { builder = baz_builder, subscribers = {} },
-      { builder = qux_builder, subscribers = {} }
+      { builder = foo_builder, deps = { 'foo-dep1', 'foo-dep2' }, subscribers = {} },
+      { builder = bar_builder, deps = { 'foo-dep1', 'foo-dep2' }, subscribers = {} },
+      { builder = baz_builder, deps = { 'foo-dep1', 'foo-dep2' }, subscribers = {} },
+      { builder = qux_builder, deps = { 'foo-dep1', 'foo-dep2' }, subscribers = {} }
     }
   end)
 
   it('should do nothing for a completed tree', function()
     nothing_should_happen():when(function()
-      build_tree({
+      build({
         target = 'foo',
         match = 'foo-match',
         complete = true,
@@ -36,21 +39,22 @@ describe('core.build_tree', function()
   end)
 
   it('should build a tree with no dependencies', function()
-    foo_builder:should_be_called_with('foo', 'foo-match'):when(function()
-      build_tree({
-        target = 'foo',
-        match = 'foo-match',
-        rule = rules[1],
-        deps = {}
-      })
-    end)
+    foo_builder:should_be_called_with(match({ target = 'foo', match = 'foo-match', deps = rules[1].deps })):
+      when(function()
+        build({
+          target = 'foo',
+          match = 'foo-match',
+          rule = rules[1],
+          deps = {}
+        })
+      end)
   end)
 
   it('should build a tree with one dependency', function()
-    bar_builder:should_be_called_with('bar', 'bar-match'):
-      and_then(foo_builder:should_be_called_with('foo', 'foo-match')):
+    bar_builder:should_be_called_with(match({ target = 'bar', match = 'bar-match', deps = rules[2].deps })):
+      and_then(foo_builder:should_be_called_with(match({ target = 'foo', match = 'foo-match', deps = rules[1].deps }))):
       when(function()
-        build_tree({
+        build({
           target = 'foo',
           match = 'foo-match',
           rule = rules[1],
@@ -67,11 +71,11 @@ describe('core.build_tree', function()
   end)
 
   it('should build a tree with multiple dependencies', function()
-    bar_builder:should_be_called_with('bar', 'bar-match'):
-      and_also(baz_builder:should_be_called_with('baz', 'baz-match')):
-      and_then(foo_builder:should_be_called_with('foo', 'foo-match')):
+    bar_builder:should_be_called_with(match({ target = 'bar', match = 'bar-match', deps = rules[2].deps })):
+      and_also(baz_builder:should_be_called_with(match({ target = 'baz', match = 'baz-match', deps = rules[3].deps }))):
+      and_then(foo_builder:should_be_called_with(match({ target = 'foo', match = 'foo-match', deps = rules[1].deps }))):
       when(function()
-        build_tree({
+        build({
           target = 'foo',
           match = 'foo-match',
           rule = rules[1],
@@ -94,11 +98,11 @@ describe('core.build_tree', function()
   end)
 
   it('should build a tree with multiple nested dependencies', function()
-    qux_builder:should_be_called_with('qux', 'qux-match'):
-      and_then(baz_builder:should_be_called_with('baz', 'baz-match')):
-      and_then(foo_builder:should_be_called_with('foo', 'foo-match')):
+    qux_builder:should_be_called_with(match({ target = 'qux', match = 'qux-match', deps = rules[4].deps })):
+      and_then(baz_builder:should_be_called_with(match({ target = 'baz', match = 'baz-match', deps = rules[3].deps }))):
+      and_then(foo_builder:should_be_called_with(match({ target = 'foo', match = 'foo-match', deps = rules[1].deps }))):
       when(function()
-        build_tree({
+        build({
           target = 'foo',
           match = 'foo-match',
           rule = rules[1],
@@ -129,12 +133,12 @@ describe('core.build_tree', function()
       deps = {}
     }
 
-    qux_builder:should_be_called_with('qux', 'qux-match'):
-      and_then(bar_builder:should_be_called_with('bar', 'bar-match')):
-      and_also(baz_builder:should_be_called_with('baz', 'baz-match')):
-      and_then(foo_builder:should_be_called_with('foo', 'foo-match')):
+    qux_builder:should_be_called_with(match({ target = 'qux', match = 'qux-match', deps = rules[4].deps })):
+      and_then(bar_builder:should_be_called_with(match({ target = 'bar', match = 'bar-match', deps = rules[2].deps }))):
+      and_also(baz_builder:should_be_called_with(match({ target = 'baz', match = 'baz-match', deps = rules[3].deps }))):
+      and_then(foo_builder:should_be_called_with(match({ target = 'foo', match = 'foo-match', deps = rules[1].deps }))):
       when(function()
-        build_tree({
+        build({
           target = 'foo',
           match = 'foo-match',
           rule = rules[1],

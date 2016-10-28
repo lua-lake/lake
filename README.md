@@ -2,12 +2,14 @@
 
 ## Run sample
 ```shell
-luvi . -- sample/sample.lk
+cd sample
+luvi .. -- sample.lk
 ```
 
 or
 
 ```shell
 lit make
-./lake sample/sample.lk
+cd sample
+../lake sample.lk
 ```
