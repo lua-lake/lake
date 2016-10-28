@@ -16,7 +16,7 @@ describe('core.Tree', function()
   end)
 
   it('should return nothing when there are no rules', function()
-    local tree = Tree('foo', {})
+    local tree = Tree('foo', {}, {})
 
     assert.is_nil(tree)
   end)
@@ -24,7 +24,7 @@ describe('core.Tree', function()
   it('should return nothing when there is no rule for the target', function()
     local tree = Tree('foo', {
       { target = 'bar', deps = {} }
-    })
+    }, {})
 
     assert.is_nil(tree)
   end)
@@ -33,7 +33,7 @@ describe('core.Tree', function()
     local tree = Tree('foo', {
       { target = 'foo', deps = { 'bar', 'baz' } },
       { target = 'bar', deps = {} }
-    })
+    }, {})
 
     assert.is_nil(tree)
   end)
@@ -51,7 +51,7 @@ describe('core.Tree', function()
       { target = 'baz', deps = {} }
     }
 
-    local tree = Tree('foo', rules)
+    local tree = Tree('foo', rules, {})
 
     assert.are_same({
       target = 'foo',
@@ -72,7 +72,7 @@ describe('core.Tree', function()
       { target = 'foo', deps = { 'bar' } }
     }
 
-    local tree = Tree('foo', rules)
+    local tree = Tree('foo', rules, {})
 
     assert.are_same({
       target = 'foo',
@@ -96,7 +96,7 @@ describe('core.Tree', function()
       { target = 'baz', deps = {} }
     }
 
-    local tree = Tree('foo', rules)
+    local tree = Tree('foo', rules, {})
 
     assert.are_same({
       target = 'foo',
@@ -121,7 +121,7 @@ describe('core.Tree', function()
       { target = 'qux', deps = {} }
     }
 
-    local tree = Tree('foo', rules)
+    local tree = Tree('foo', rules, {})
 
     assert.are_same({
       target = 'foo',
@@ -151,7 +151,7 @@ describe('core.Tree', function()
       { target = 'baz', deps = {} }
     }
 
-    local tree = Tree('foo', rules)
+    local tree = Tree('foo', rules, {})
 
     assert.are_same({
       target = 'foo',
@@ -173,7 +173,7 @@ describe('core.Tree', function()
       { target = 'baz', deps = {} }
     }
 
-    local tree = Tree('foo', rules)
+    local tree = Tree('foo', rules, {})
 
     assert.are_same({
       target = 'foo',
@@ -195,7 +195,7 @@ describe('core.Tree', function()
       { target = 'baz', deps = {} }
     }
 
-    local tree = Tree('foo', rules)
+    local tree = Tree('foo', rules, {})
 
     assert.are_same({
       target = 'foo',
@@ -218,7 +218,7 @@ describe('core.Tree', function()
       { target = 'baz', deps = {} }
     }
 
-    local tree = Tree('foo', rules)
+    local tree = Tree('foo', rules, {})
 
     assert.are_same({
       target = 'foo',
@@ -247,7 +247,7 @@ describe('core.Tree', function()
       { target = 'baz', deps = {} }
     }
 
-    local tree = Tree('foo', rules)
+    local tree = Tree('foo', rules, {})
 
     assert.are_same({
       target = 'foo',
@@ -273,7 +273,7 @@ describe('core.Tree', function()
       { target = 'baz', deps = {} }
     }
 
-    local tree = Tree('foo', rules)
+    local tree = Tree('foo', rules, {})
 
     assert.are_same({
       target = 'foo',
@@ -309,7 +309,7 @@ describe('core.Tree', function()
       { target = 'quux', deps = { } },
     }
 
-    local tree = Tree('foo', rules)
+    local tree = Tree('foo', rules, {})
 
     assert.are_same({
       target = 'foo',
@@ -350,7 +350,7 @@ describe('core.Tree', function()
       { target = '*.o', deps = { '*.c' } }
     }
 
-    local tree = Tree('app.lib', rules)
+    local tree = Tree('app.lib', rules, {})
 
     assert.are_same({
       target = 'app.lib',
@@ -383,8 +383,73 @@ describe('core.Tree', function()
       { target = 'qux', deps = { } },
     }
 
-    local tree = Tree('foo', rules)
+    local tree = Tree('foo', rules, {})
 
     assert.are.equal(tree.deps[1].deps[1], tree.deps[2].deps[1])
+  end)
+
+  it('should build an incomplete tree for a target that is out of date due to a provided simple dependency', function()
+    files = {
+      foo = { mtime = { sec = 3, nsec = 0 }, type = 'file' },
+      bar = { mtime = { sec = 2, nsec = 0 }, type = 'file' },
+      baz = { mtime = { sec = 4, nsec = 0 }, type = 'file' }
+    }
+
+    local rules = {
+      { target = 'foo', deps = { 'bar' } },
+      { target = 'bar', deps = {} }
+    }
+
+    local simple_dependencies = {
+      bar = { 'baz' }
+    }
+
+    local tree = Tree('foo', rules, simple_dependencies)
+
+    assert.are.same({
+      target = 'foo',
+      match = 'foo',
+      rule = rules[1],
+      deps = {
+        {
+          target = 'bar',
+          match = 'bar',
+          rule = rules[2],
+          deps = {}
+        }
+      }
+    }, tree)
+  end)
+
+  it('should treat missing simple dependencies as newer than the target', function()
+    files = {
+      foo = { mtime = { sec = 3, nsec = 0 }, type = 'file' },
+      bar = { mtime = { sec = 2, nsec = 0 }, type = 'file' }
+    }
+
+    local rules = {
+      { target = 'foo', deps = { 'bar' } },
+      { target = 'bar', deps = {} }
+    }
+
+    local simple_dependencies = {
+      bar = { 'baz' }
+    }
+
+    local tree = Tree('foo', rules, simple_dependencies)
+
+    assert.are.same({
+      target = 'foo',
+      match = 'foo',
+      rule = rules[1],
+      deps = {
+        {
+          target = 'bar',
+          match = 'bar',
+          rule = rules[2],
+          deps = {}
+        }
+      }
+    }, tree)
   end)
 end)

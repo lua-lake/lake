@@ -21,7 +21,7 @@ local function is_before(mtime1, mtime2)
   end
 end
 
-return function(target, rules)
+return function(target, rules, simple_dependencies)
   local tree_cache = {}
 
   local function make_tree(target)
@@ -29,10 +29,17 @@ return function(target, rules)
 
     local target_exists = exists(target)
     local target_mtime = mtime(target)
+    local out_of_date_due_to_simple_dependency = false
+
+    for _, simple_dependency in ipairs(simple_dependencies[target] or {}) do
+      if not exists(simple_dependency) or is_before(target_mtime, mtime(simple_dependency)) then
+        out_of_date_due_to_simple_dependency = true
+      end
+    end
 
     for _, rule in ipairs(rules) do
       local match = target:match('^' .. rule.target:gsub('*', '(%%S+)') .. '$')
-      local out_of_date = false
+      local out_of_date = out_of_date_due_to_simple_dependency
 
       if match ~= nil then
         local satisfied_all_deps = true
