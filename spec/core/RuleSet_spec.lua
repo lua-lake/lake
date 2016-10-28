@@ -6,6 +6,14 @@ describe('core.RuleSet', function()
     rule_set = RuleSet()
   end)
 
+  it('should start with simple_dependencies empty', function()
+    assert.are.same({}, rule_set.rules)
+  end)
+
+  it('should start with simple_dependencies empty', function()
+    assert.are.same({}, rule_set.simple_dependencies)
+  end)
+
   it('should allow adding a simple rule', function()
     local builder = load''
 
@@ -132,5 +140,24 @@ describe('core.RuleSet', function()
         phony = false
       }
     }, rule_set.rules)
+  end)
+
+  it('should allow adding a simple dependencies', function()
+    rule_set.add_simple_dependency('target1', { 'dep1', 'dep2', 'dep3' })
+    rule_set.add_simple_dependency('target2', { 'dep4', 'dep5' })
+
+    assert.are.same({
+      target1 = { 'dep1', 'dep2', 'dep3' },
+      target2 = { 'dep4', 'dep5' }
+    }, rule_set.simple_dependencies)
+  end)
+
+  it('should append to simple dependencies when the same target is used', function()
+    rule_set.add_simple_dependency('target', { 'dep1', 'dep2', 'dep3' })
+    rule_set.add_simple_dependency('target', { 'dep4', 'dep5' })
+
+    assert.are.same({
+      target = { 'dep1', 'dep2', 'dep3', 'dep4', 'dep5' }
+    }, rule_set.simple_dependencies)
   end)
 end)
