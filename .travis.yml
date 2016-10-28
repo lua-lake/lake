@@ -1,0 +1,12 @@
+language: c
+install:
+- curl -L https://github.com/luvit/lit/raw/master/get-lit.sh | sh
+- curl -L http://git.io/lenv | perl
+- source ~/.lenvrc
+- lenv install-lj 2.0.4
+- lenv use-lj 2.0.4
+- luarocks install busted
+- lit install
+
+script:
+- busted
