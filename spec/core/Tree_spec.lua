@@ -85,6 +85,38 @@ describe('core.Tree', function()
     }, tree)
   end)
 
+  it('should create an incomplete tree when the target exists but is not up-to-date do to an indirect dependency', function()
+    files = {
+      foo = { mtime = { sec = 4, nsec = 0 } },
+      bar = { mtime = { sec = 2, nsec = 0 } },
+      baz = { mtime = { sec = 2, nsec = 0 } },
+      qux = { mtime = { sec = 3, nsec = 0 } },
+    }
+
+    local rules = {
+      { target = 'foo', deps = { 'bar', 'baz' } },
+      { target = 'bar', deps = { 'qux' } },
+      { target = 'baz', deps = {} },
+      { target = 'qux', deps = {} }
+    }
+
+    local tree = Tree('foo', rules)
+
+    assert.are_same({
+      target = 'foo',
+      match = 'foo',
+      rule = rules[1],
+      deps = {
+        {
+          target = 'bar',
+          match = 'bar',
+          rule = rules[2],
+          deps = {}
+        }
+      }
+    }, tree)
+  end)
+
   it('should create an incomplete tree when the target exists but is not up-to-date due to nanoseconds', function()
     files = {
       foo = { mtime = { sec = 2, nsec = 0 } },

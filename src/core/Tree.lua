@@ -42,19 +42,16 @@ return function(target, rules)
 
         for _, dep in ipairs(rule.deps) do
           local dep = dep:gsub('*', match)
-          if not exists(dep) then
+          local sub_tree = make_tree(dep)
+          if not sub_tree then
+            satisfied_all_deps = false
+            break
+          elseif not sub_tree.complete then
             out_of_date = true
-            local sub_tree = make_tree(dep)
-            if not sub_tree then
-              satisfied_all_deps = false
-              break
-            end
-            all_deps_complete = all_deps_complete and sub_tree.complete
+            all_deps_complete = false
             table.insert(tree.deps, sub_tree)
-          else
-            if not target_exists or is_before(target_mtime, mtime(dep)) then
-              out_of_date = true
-            end
+          elseif not target_exists or is_before(target_mtime, mtime(dep)) then
+            out_of_date = true
           end
         end
 
@@ -66,6 +63,10 @@ return function(target, rules)
           return tree
         end
       end
+    end
+
+    if exists(target) then
+      return { complete = true }
     end
   end
 
