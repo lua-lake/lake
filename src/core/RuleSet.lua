@@ -1,6 +1,6 @@
 return function()
   local rules = {}
-  local simple_dependencies = {}
+  local indirect_dependencies = {}
 
   local function add_rule(phony, targets, deps, builder)
     if type(targets) == 'string' then
@@ -28,22 +28,22 @@ return function()
     end
   end
 
-  local function add_simple_dependency(target, deps)
-    simple_dependencies[target] = simple_dependencies[target] or {}
+  local function add_indirect_dependency(target, deps)
+    indirect_dependencies[target] = indirect_dependencies[target] or {}
     for _, dep in ipairs(deps) do
-      table.insert(simple_dependencies[target], dep)
+      table.insert(indirect_dependencies[target], dep)
     end
   end
 
   return {
     rules = rules,
-    simple_dependencies = simple_dependencies,
+    indirect_dependencies = indirect_dependencies,
     add_rule = function(...)
       add_rule(false, ...)
     end,
     add_phony = function(...)
       add_rule(true, ...)
     end,
-    add_simple_dependency = add_simple_dependency
+    add_indirect_dependency = add_indirect_dependency
   }
 end
