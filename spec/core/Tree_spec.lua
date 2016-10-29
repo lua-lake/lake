@@ -397,7 +397,7 @@ describe('core.Tree', function()
 
     local rules = {
       { target = 'foo', deps = { 'bar' } },
-      { target = 'bar', deps = {} }
+      { target = 'bar', deps = {} } -- todo this probably needs to work without this here
     }
 
     local simple_dependencies = {

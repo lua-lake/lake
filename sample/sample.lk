@@ -13,6 +13,8 @@ end)
 sources = map(sources, set_extension('o'))
 sources = map(sources, add_prefix('build/'))
 
+map(map(sources, set_extension('d')), load_dependency_file)
+
 rule('build', {}, function(args)
   print('Creating build directory...')
   fs.mkdirp(args.target)
@@ -24,6 +26,9 @@ rule('build/src/a.o', { 'src/a.c', 'build' }, function(args)
   print('Compiling ' .. args.target .. '...')
   fs.mkdirp(get_path(args.target))
   exec('touch ' .. args.target)
+  fs.writeFile('build/src/a.d', [[
+src/a.c: src/a.h src/b.h
+  ]])
   exec('sleep 0.25')
   print('Finished compiling ' .. args.target)
 end)

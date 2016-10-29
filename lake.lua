@@ -43,6 +43,7 @@ return function(args)
       append = require './src/util/append',
       flatten = require './src/util/flatten',
       flat_map = require './src/util/flat_map',
+      load_dependency_file = require './src/util/LoadDependencyFile'(rule_set),
       get_path = function(s)
         local pathjoin = require 'pathjoin'
         local parts = pathjoin.splitPath(s)
