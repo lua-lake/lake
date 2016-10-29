@@ -1,5 +1,5 @@
-local map = require 'util.map'
-local flatten = require 'util.flatten'
+local map = require './src/util/map'
+local flatten = require './src/util/flatten'
 
 return function(xs, f)
   return flatten(map(xs, f))

@@ -1,5 +1,10 @@
 describe('util.flat_map', function()
-  local flat_map = require 'util.flat_map'
+  local proxyquire = require 'deps/proxyquire'
+
+  local flat_map = proxyquire('util.flat_map', {
+    ['./src/util/map'] = require 'util.map',
+    ['./src/util/flatten'] = require 'util.flatten'
+  })
 
   local function identity(x) return x end
   local function double(x) return 2 * x end

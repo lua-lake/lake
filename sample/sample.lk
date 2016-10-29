@@ -4,10 +4,12 @@ include('./compile.lk')
 include('./assemble.lk')
 
 local source_patterns = { '%.c$', '%.s$' }
+local source_directories = { 'src', 'lib' }
 
-local sources = {}
-append(sources, files_from_directory('src', { recursive = true, match = source_patterns }))
-append(sources, files_from_directory('lib', { recursive = true, match = source_patterns }))
+local sources = flat_map(source_directories, function(directory)
+  return files_from_directory(directory, { recursive = true, match = source_patterns })
+end)
+
 sources = map(sources, set_extension('o'))
 sources = map(sources, add_prefix('build/'))
 
