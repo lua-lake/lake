@@ -2,10 +2,14 @@ return function(job_queue)
   local function execute(tree)
     if not tree.complete then
       tree.complete = true
+      local deps = {}
+      for _, dep in ipairs(tree.rule.deps) do
+        table.insert(deps, (dep:gsub('*', tree.match)))
+      end
       tree.rule.builder({
         target = tree.target,
         match = tree.match,
-        deps = tree.rule.deps
+        deps = deps
       })
       for _, subscriber in ipairs(tree.rule.subscribers[tree.target] or {}) do
         subscriber()
