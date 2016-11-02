@@ -100,14 +100,18 @@ describe('core.RuleSet', function()
     }, rule_set.rules)
   end)
 
-  it('should allow adding a rule with no builder', function()
-    local builder = load''
-
+  it('should provide an empty builder when a rule has no builder', function()
     rule_set.add_rule('target', {})
 
     assert.has_no_errors(function()
       rule_set.rules[1].builder()
     end)
+  end)
+
+  it('should use empty to indicate that no builder was provided to a rule', function()
+    rule_set.add_rule('target1', {})
+
+    assert.is_true(rule_set.rules[1].empty)
   end)
 
   it('should prioritize non-pattern rules', function()

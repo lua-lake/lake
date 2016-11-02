@@ -77,7 +77,7 @@ return function(target, rules, indirect_dependencies)
         end
 
         if satisfied_all_deps then
-          if (all_deps_complete and rule.phony) or (target_exists and not out_of_date) then
+          if (all_deps_complete and rule.phony and rule.empty) or (target_exists and not out_of_date) then
             tree.complete = true
           end
           tree_cache[target] = tree

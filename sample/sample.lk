@@ -1,5 +1,11 @@
 target('all', 'build/app.lib')
 
+target('clean', {}, function()
+  print('Cleaning...')
+  fs.rmrf('build')
+  print('Finished cleaning')
+end)
+
 include('./compile.lk')
 include('./assemble.lk')
 
