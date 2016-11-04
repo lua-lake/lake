@@ -14,7 +14,7 @@ return function(args)
 
   local function run(target)
     coroutine.wrap(function()
-      local tree = Tree(target, rule_set.rules, rule_set.simple_dependencies)
+      local tree = Tree(target, rule_set.rules, rule_set.indirect_dependencies)
 
       if not tree then
         print('error: no recipe for building target "' .. target .. '"')
@@ -43,6 +43,7 @@ return function(args)
       append = require './src/util/append',
       flatten = require './src/util/flatten',
       flat_map = require './src/util/flat_map',
+      load_dependency_file = require './src/util/LoadDependencyFile'(rule_set),
       get_path = function(s)
         local pathjoin = require 'pathjoin'
         local parts = pathjoin.splitPath(s)

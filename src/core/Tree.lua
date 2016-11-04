@@ -21,7 +21,7 @@ local function is_before(mtime1, mtime2)
   end
 end
 
-return function(target, rules, simple_dependencies)
+return function(target, rules, indirect_dependencies)
   local tree_cache = {}
 
   local function make_tree(target)
@@ -29,17 +29,19 @@ return function(target, rules, simple_dependencies)
 
     local target_exists = exists(target)
     local target_mtime = mtime(target)
-    local out_of_date_due_to_simple_dependency = false
 
-    for _, simple_dependency in ipairs(simple_dependencies[target] or {}) do
-      if not exists(simple_dependency) or is_before(target_mtime, mtime(simple_dependency)) then
-        out_of_date_due_to_simple_dependency = true
+    local function out_of_date_due_to_indirect_dependency(dep)
+      for _, indirect_dependency in ipairs(indirect_dependencies[dep] or {}) do
+        if not exists(indirect_dependency) or is_before(target_mtime, mtime(indirect_dependency)) then
+          return true
+        end
       end
+      return false
     end
 
     for _, rule in ipairs(rules) do
       local match = target:match('^' .. rule.target:gsub('*', '(%%S+)') .. '$')
-      local out_of_date = out_of_date_due_to_simple_dependency
+      local out_of_date = false
 
       if match ~= nil then
         local satisfied_all_deps = true
@@ -60,11 +62,17 @@ return function(target, rules, simple_dependencies)
           elseif not sub_tree.complete then
             out_of_date = true
             all_deps_complete = false
-            table.insert(tree.deps, sub_tree)
+            if sub_tree.deps then
+              table.insert(tree.deps, sub_tree)
+            end
           elseif not target_exists or is_before(target_mtime, mtime(dep)) then
             if not is_directory(dep) then
               out_of_date = true
             end
+          end
+
+          if out_of_date_due_to_indirect_dependency(dep) then
+            out_of_date = true
           end
         end
 
@@ -79,7 +87,9 @@ return function(target, rules, simple_dependencies)
     end
 
     if exists(target) then
-      return { complete = true }
+      local tree = { target = target }
+      tree.complete = true
+      return tree
     end
   end
 

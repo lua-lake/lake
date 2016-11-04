@@ -18,4 +18,8 @@ describe('util.map', function()
     map(input, double)
     assert.are.same({ 1, 2, 3 }, input)
   end)
+
+  it('should allow nil values to be returned by the mapping function', function()
+    assert.are.same({}, map({ 1, 2, 3 }, load''))
+  end)
 end)

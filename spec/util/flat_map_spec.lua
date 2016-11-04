@@ -24,6 +24,10 @@ describe('util.flat_map', function()
     assert.are.same({ 1, 2, 3 }, input)
   end)
 
+  it('should allow nil values to be returned by the mapping function', function()
+    assert.are.same({}, flat_map({ 1, 2, 3 }, load''))
+  end)
+
   it('should flatten the generated list', function()
     assert.are.same({ 1, 2, 3, 4, 5, 6 }, flat_map({ { 1, 2 }, { 3, 4 }, { 5, 6 } }, identity))
   end)

@@ -388,7 +388,7 @@ describe('core.Tree', function()
     assert.are.equal(tree.deps[1].deps[1], tree.deps[2].deps[1])
   end)
 
-  it('should build an incomplete tree for a target that is out of date due to a provided simple dependency', function()
+  it('should build an incomplete tree for a target that is out of date due to an indirect dependency', function()
     files = {
       foo = { mtime = { sec = 3, nsec = 0 }, type = 'file' },
       bar = { mtime = { sec = 2, nsec = 0 }, type = 'file' },
@@ -396,32 +396,50 @@ describe('core.Tree', function()
     }
 
     local rules = {
-      { target = 'foo', deps = { 'bar' } },
-      { target = 'bar', deps = {} }
+      { target = 'foo', deps = { 'bar' } }
     }
 
-    local simple_dependencies = {
+    local indirect_dependencies = {
       bar = { 'baz' }
     }
 
-    local tree = Tree('foo', rules, simple_dependencies)
+    local tree = Tree('foo', rules, indirect_dependencies)
 
     assert.are.same({
       target = 'foo',
       match = 'foo',
       rule = rules[1],
-      deps = {
-        {
-          target = 'bar',
-          match = 'bar',
-          rule = rules[2],
-          deps = {}
-        }
-      }
+      deps = {}
     }, tree)
   end)
 
-  it('should treat missing simple dependencies as newer than the target', function()
+  it('should build a complete tree for a target that is up-to-date with an indirect dependency', function()
+    files = {
+      foo = { mtime = { sec = 3, nsec = 0 }, type = 'file' },
+      bar = { mtime = { sec = 1, nsec = 0 }, type = 'file' },
+      baz = { mtime = { sec = 2, nsec = 0 }, type = 'file' }
+    }
+
+    local rules = {
+      { target = 'foo', deps = { 'bar' } }
+    }
+
+    local indirect_dependencies = {
+      bar = { 'baz' }
+    }
+
+    local tree = Tree('foo', rules, indirect_dependencies)
+
+    assert.are.same({
+      complete = true,
+      target = 'foo',
+      match = 'foo',
+      rule = rules[1],
+      deps = {}
+    }, tree)
+  end)
+
+  it('should treat missing indirect dependencies as newer than the target', function()
     files = {
       foo = { mtime = { sec = 3, nsec = 0 }, type = 'file' },
       bar = { mtime = { sec = 2, nsec = 0 }, type = 'file' }
@@ -429,27 +447,19 @@ describe('core.Tree', function()
 
     local rules = {
       { target = 'foo', deps = { 'bar' } },
-      { target = 'bar', deps = {} }
     }
 
-    local simple_dependencies = {
+    local indirect_dependencies = {
       bar = { 'baz' }
     }
 
-    local tree = Tree('foo', rules, simple_dependencies)
+    local tree = Tree('foo', rules, indirect_dependencies)
 
     assert.are.same({
       target = 'foo',
       match = 'foo',
       rule = rules[1],
-      deps = {
-        {
-          target = 'bar',
-          match = 'bar',
-          rule = rules[2],
-          deps = {}
-        }
-      }
+      deps = {}
     }, tree)
   end)
 end)
