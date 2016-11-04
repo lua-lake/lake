@@ -8,7 +8,8 @@ return {
     'luvit/pretty-print@2.0.0',
     'ryanplusplus/proxyquire@1.0.2',
     'ryanplusplus/mach@1.0.7',
-    'ryanplusplus/getopt@1.0.0'
+    'ryanplusplus/getopt@1.0.0',
+    'luvit/luvit@2.11.5'
   },
   files = {
     '**.lua',
