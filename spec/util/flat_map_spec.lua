@@ -2,8 +2,8 @@ describe('util.flat_map', function()
   local proxyquire = require 'deps/proxyquire'
 
   local flat_map = proxyquire('util.flat_map', {
-    ['./src/util/map'] = require 'util.map',
-    ['./src/util/flatten'] = require 'util.flatten'
+    ['./map'] = require 'util.map',
+    ['./flatten'] = require 'util.flatten'
   })
 
   local function identity(x) return x end
