@@ -3,13 +3,18 @@ return function()
   local indirect_dependencies = {}
 
   local function add_rule(phony, targets, deps, builder)
+    local empty
+
     if type(targets) == 'string' then
       targets = { targets }
     end
     if type(deps) == 'string' then
       deps = { deps }
     end
-    builder = builder or function() end
+    if not builder then
+      builder = function() end
+      empty = true
+    end
 
     for _, target in ipairs(targets) do
       local rule = {
@@ -19,6 +24,10 @@ return function()
         subscribers = {},
         phony = phony
       }
+
+      if empty then
+        rule.empty = true
+      end
 
       if target:match('*') then
         table.insert(rules, rule)

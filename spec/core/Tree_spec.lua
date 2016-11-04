@@ -183,7 +183,30 @@ describe('core.Tree', function()
     }, tree)
   end)
 
-  it('should create a completed tree when the target does not exist but is phony', function()
+  it('should create a completed tree when the target does not exist but is empty and phony', function()
+    files = {
+      bar = { mtime = { sec = 2, nsec = 0 }, type = 'file' },
+      baz = { mtime = { sec = 2, nsec = 0 }, type = 'file' }
+    }
+
+    local rules = {
+      { target = 'foo', deps = { 'bar', 'baz' }, phony = true, empty = true },
+      { target = 'bar', deps = {} },
+      { target = 'baz', deps = {} }
+    }
+
+    local tree = Tree('foo', rules, {})
+
+    assert.are_same({
+      target = 'foo',
+      match = 'foo',
+      complete = true,
+      rule = rules[1],
+      deps = {}
+    }, tree)
+  end)
+
+  it('should create an incomplete tree when the target does not exist and is phony', function()
     files = {
       bar = { mtime = { sec = 2, nsec = 0 }, type = 'file' },
       baz = { mtime = { sec = 2, nsec = 0 }, type = 'file' }
@@ -200,7 +223,6 @@ describe('core.Tree', function()
     assert.are_same({
       target = 'foo',
       match = 'foo',
-      complete = true,
       rule = rules[1],
       deps = {}
     }, tree)
