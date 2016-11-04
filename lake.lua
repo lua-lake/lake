@@ -4,13 +4,15 @@ return function(args)
   local TreeBuilder = require './src/core/TreeBuilder'
   local JobQueue = require './src/core/JobQueue'
 
-  local rule_set = RuleSet()
-  local job_queue = JobQueue(2)
+  local options = require './src/core/options'(args)
 
-  if not args[1] then
-    print('usage: lake <lakefile> [<target>]')
+  if not options then
+    print(options.usage)
     return
   end
+
+  local rule_set = RuleSet()
+  local job_queue = JobQueue(options.job_count)
 
   local function run(target)
     coroutine.wrap(function()
@@ -30,7 +32,7 @@ return function(args)
   end
 
   coroutine.wrap(function()
-    setfenv(loadfile(args[1]), setmetatable({
+    setfenv(loadfile(options.lakefile), setmetatable({
       rule = rule_set.add_rule,
       target = rule_set.add_phony,
       fs = require 'coro-fs',
@@ -54,6 +56,6 @@ return function(args)
       __index = _G
     }))()
 
-    run(args[2] or 'all')
+    run(options.target)
   end)()
 end

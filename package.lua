@@ -7,7 +7,8 @@ return {
     'creationix/pathjoin@2.0.0',
     'luvit/pretty-print@2.0.0',
     'ryanplusplus/proxyquire@1.0.2',
-    'ryanplusplus/mach@1.0.7'
+    'ryanplusplus/mach@1.0.7',
+    'ryanplusplus/getopt@1.0.0'
   },
   files = {
     '**.lua',
