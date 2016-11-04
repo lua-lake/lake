@@ -1,3 +1,3 @@
-return require 'luvit'(function(...)
+return require 'luvit'(function()
   require './lake'(args)
 end)
