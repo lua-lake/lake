@@ -1,6 +1,6 @@
 rule('build/*.o', { '*.c', 'build' }, function(args)
   print('Compiling ' .. args.target .. ' with generic rule...')
-  fs.mkdirp(get_path(args.target))
+  fs.mkdirp(path.basename(args.target))
   exec('touch ' .. args.target)
   fs.writeFile('build/' .. args.match .. '.d', args.deps[1] .. ':' .. args.match .. '.h')
   exec('sleep 0.25')

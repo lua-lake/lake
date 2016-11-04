@@ -46,12 +46,7 @@ return function(args)
       flatten = require './src/util/flatten',
       flat_map = require './src/util/flat_map',
       load_dependency_file = require './src/util/LoadDependencyFile'(rule_set),
-      get_path = function(s)
-        local pathjoin = require 'pathjoin'
-        local parts = pathjoin.splitPath(s)
-        table.remove(parts)
-        return pathjoin.pathJoin(table.unpack(parts))
-      end
+      path = require 'path'
     }, {
       __index = _G
     }))()
