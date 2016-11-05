@@ -31,8 +31,15 @@ return function(args)
     end)()
   end
 
+  local lakefile = loadfile(options.lakefile)
+
+  if not lakefile then
+    print(options.lakefile .. ' not found')
+    return
+  end
+
   coroutine.wrap(function()
-    setfenv(loadfile(options.lakefile), setmetatable({
+    setfenv(lakefile, setmetatable({
       rule = rule_set.add_rule,
       target = rule_set.add_phony,
       fs = require 'coro-fs',
