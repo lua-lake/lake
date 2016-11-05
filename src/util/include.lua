@@ -18,7 +18,7 @@ return function(file, environment)
     local current_directory = debug.getinfo(2, 'S').source:sub(2):match('(.*/)') or ''
     file = current_directory .. file:match('^./(.+)')
   end
-  setfenv(loadfile(file), setmetatable(locals(), {
+  return setfenv(loadfile(file), setmetatable(locals(), {
     __index = environment or getfenv(2)
   }))()
 end

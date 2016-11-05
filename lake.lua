@@ -49,7 +49,7 @@ return function(args)
     exec = exec,
     vexec = function(command) exec(command, true) end,
     include = include,
-    import = function(file) include(file, environment) end,
+    import = function(file) return include(file, environment) end,
     files_from_directory = require './src/util/files_from_directory',
     map = require './src/util/map',
     set_extension = require './src/util/set_extension',

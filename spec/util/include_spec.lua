@@ -38,4 +38,10 @@ describe('util.include', function()
     assert.spy(env.foo).was_called_with(1, 2, 3)
     assert.spy(bar).was_not_called()
   end)
+
+  it('should return the return value of the included file', function()
+    local foo = spy.new(load'')
+
+    assert.are.equal(5, include('spec/util/include_helper.lua'))
+  end)
 end)

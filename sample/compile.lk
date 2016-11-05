@@ -1,8 +1,12 @@
-rule('build/*.o', { '*.c', 'build' }, function(args)
-  print('Compiling ' .. args.target .. ' with generic rule...')
-  fs.mkdirp(path.dirname(args.target))
-  exec('touch ' .. args.target)
-  fs.writeFile('build/' .. args.match .. '.d', args.deps[1] .. ':' .. args.match .. '.h')
-  exec('sleep 0.25')
-  print('Finished compiling ' .. args.target)
-end)
+return function(config)
+  local build_dir = config.build_dir
+
+  rule(build_dir .. '/*.o', { '*.c', build_dir }, function(args)
+    print('Compiling ' .. args.target .. ' with generic rule...')
+    fs.mkdirp(path.dirname(args.target))
+    exec('touch ' .. args.target)
+    fs.writeFile(build_dir .. '/' .. args.match .. '.d', args.deps[1] .. ':' .. args.match .. '.h')
+    exec('sleep 0.25')
+    print('Finished compiling ' .. args.target)
+  end)
+end

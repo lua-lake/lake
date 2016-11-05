@@ -1,7 +1,11 @@
-rule('build/*.o', { '*.s', 'build' }, function(args)
-  print('Assembling ' .. args.target .. ' with generic rule...')
-  fs.mkdirp(path.dirname(args.target))
-  exec('touch ' .. args.target)
-  exec('sleep 0.25')
-  print('Finished assembling ' .. args.target)
-end)
+return function(config)
+  local build_dir = config.build_dir
+
+  rule(build_dir .. '/*.o', { '*.s', build_dir }, function(args)
+    print('Assembling ' .. args.target .. ' with generic rule...')
+    fs.mkdirp(path.dirname(args.target))
+    exec('touch ' .. args.target)
+    exec('sleep 0.25')
+    print('Finished assembling ' .. args.target)
+  end)
+end

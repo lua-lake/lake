@@ -6,8 +6,8 @@ target('clean', {}, function()
   print('Finished cleaning')
 end)
 
-include('./compile.lk')
-include('./assemble.lk')
+import('./compile.lk')({ build_dir = 'build' })
+import('./assemble.lk')({ build_dir = 'build' })
 
 local source_patterns = { '%.c$', '%.s$' }
 local source_directories = { 'src', 'lib' }
