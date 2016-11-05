@@ -13,12 +13,12 @@ local function locals()
   return locals
 end
 
-return function(file)
+return function(file, environment)
   if file:match('^./') then
     local current_directory = debug.getinfo(2, 'S').source:sub(2):match('(.*/)') or ''
     file = current_directory .. file:match('^./(.+)')
   end
   setfenv(loadfile(file), setmetatable(locals(), {
-    __index = getfenv(2)
+    __index = environment or getfenv(2)
   }))()
 end

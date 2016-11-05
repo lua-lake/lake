@@ -39,29 +39,33 @@ return function(args)
   end
 
   local exec = require './src/util/exec'
+  local include = require './src/util/include'
+
+  local environment
+  environment = setmetatable({
+    rule = rule_set.add_rule,
+    target = rule_set.add_phony,
+    fs = require 'coro-fs',
+    exec = exec,
+    vexec = function(command) exec(command, true) end,
+    include = include,
+    import = function(file) include(file, environment) end,
+    files_from_directory = require './src/util/files_from_directory',
+    map = require './src/util/map',
+    set_extension = require './src/util/set_extension',
+    add_prefix = require './src/util/add_prefix',
+    append = require './src/util/append',
+    flatten = require './src/util/flatten',
+    flat_map = require './src/util/flat_map',
+    load_dependency_file = require './src/util/LoadDependencyFile'(rule_set),
+    path = require 'path',
+    env = require 'env'
+  }, {
+    __index = _G
+  })
 
   coroutine.wrap(function()
-    setfenv(lakefile, setmetatable({
-      rule = rule_set.add_rule,
-      target = rule_set.add_phony,
-      fs = require 'coro-fs',
-      exec = exec,
-      vexec = function(command) exec(command, true) end,
-      include = require './src/util/include',
-      files_from_directory = require './src/util/files_from_directory',
-      map = require './src/util/map',
-      set_extension = require './src/util/set_extension',
-      add_prefix = require './src/util/add_prefix',
-      append = require './src/util/append',
-      flatten = require './src/util/flatten',
-      flat_map = require './src/util/flat_map',
-      load_dependency_file = require './src/util/LoadDependencyFile'(rule_set),
-      path = require 'path',
-      env = require 'env'
-    }, {
-      __index = _G
-    }))()
-
+    setfenv(lakefile, environment)()
     run(options.target)
   end)()
 end
