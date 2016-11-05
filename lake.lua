@@ -38,12 +38,15 @@ return function(args)
     return
   end
 
+  local exec = require './src/util/exec'
+
   coroutine.wrap(function()
     setfenv(lakefile, setmetatable({
       rule = rule_set.add_rule,
       target = rule_set.add_phony,
       fs = require 'coro-fs',
-      exec = require './src/util/exec',
+      exec = exec,
+      vexec = function(command) exec(command, true) end,
       include = require './src/util/include',
       files_from_directory = require './src/util/files_from_directory',
       map = require './src/util/map',
