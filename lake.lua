@@ -46,7 +46,8 @@ return function(args)
       flatten = require './src/util/flatten',
       flat_map = require './src/util/flat_map',
       load_dependency_file = require './src/util/LoadDependencyFile'(rule_set),
-      path = require 'path'
+      path = require 'path',
+      env = require 'env'
     }, {
       __index = _G
     }))()
