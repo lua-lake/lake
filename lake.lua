@@ -31,10 +31,17 @@ return function(args)
     end)()
   end
 
+  local lakefile = loadfile(options.lakefile)
+
+  if not lakefile then
+    print(options.lakefile .. ' not found')
+    return
+  end
+
   local exec = require './src/util/exec'
 
   coroutine.wrap(function()
-    setfenv(loadfile(options.lakefile), setmetatable({
+    setfenv(lakefile, setmetatable({
       rule = rule_set.add_rule,
       target = rule_set.add_phony,
       fs = require 'coro-fs',
@@ -49,7 +56,8 @@ return function(args)
       flatten = require './src/util/flatten',
       flat_map = require './src/util/flat_map',
       load_dependency_file = require './src/util/LoadDependencyFile'(rule_set),
-      path = require 'path'
+      path = require 'path',
+      env = require 'env'
     }, {
       __index = _G
     }))()
