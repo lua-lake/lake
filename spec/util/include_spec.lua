@@ -39,6 +39,27 @@ describe('util.include', function()
     assert.spy(bar).was_not_called()
   end)
 
+  it('should not include locals in custom environments', function()
+    local env = {
+      foo = spy.new(load'')
+    }
+    local bar = spy.new(load'')
+
+    include('./include_helper.lua', env)
+    assert.spy(env.foo).was_called_with(1, 2, 3)
+    assert.spy(bar).was_not_called()
+  end)
+
+  it('should not allow the loaded file to modify a custom environment', function()
+    local env = {
+      foo = spy.new(load'')
+    }
+    local bar = spy.new(load'')
+
+    include('./include_helper.lua', env)
+    assert.is_nil(env.baz)
+  end)
+
   it('should return the return value of the included file', function()
     local foo = spy.new(load'')
 
