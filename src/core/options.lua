@@ -6,7 +6,8 @@ return setmetatable({
   __call = function(_, args)
     local options = {
       job_count = 1,
-      lakefile = 'Lakefile'
+      lakefile = 'Lakefile',
+      config = {}
     }
 
     for k, v in getopt('j:f:', unpack(args)) do
@@ -15,10 +16,15 @@ return setmetatable({
       elseif k == 'f' then
         options.lakefile = v
       elseif k == false then
-        if options.target then
-          return
+        local config, value = v:match('^([%w_]+)=([%w_]+)$')
+        if config and value then
+          options.config[config] = value
+        else
+          if options.target then
+            return
+          end
+          options.target = v
         end
-        options.target = v
       else
         return
       end

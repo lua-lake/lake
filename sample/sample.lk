@@ -1,3 +1,5 @@
+exec = config.verbose == 'true' and vexec or exec
+
 target('all', 'build/app.lib')
 
 target('clean', {}, function()

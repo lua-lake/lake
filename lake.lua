@@ -43,6 +43,7 @@ return function(args)
 
   local environment
   environment = setmetatable({
+    config = options.config,
     rule = rule_set.add_rule,
     target = rule_set.add_phony,
     fs = require 'coro-fs',
