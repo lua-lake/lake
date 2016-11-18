@@ -12,4 +12,8 @@ describe('util.set_extension', function()
   it('should work correctly when the filename has more than one period', function()
     assert.are.equal('ciao.a.c', set_extension('c')('ciao.a.b'))
   end)
+
+  it('should work correctly when the extension is multiple characters', function()
+    assert.are.equal('main.d', set_extension('d')('main.cpp'))
+  end)
 end)
