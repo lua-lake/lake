@@ -101,6 +101,4 @@ goodbye.c: \
 
     assert.are.same({}, rule_set.indirect_dependencies)
   end)
-
-  -- (option to) ignore missing files
 end)
