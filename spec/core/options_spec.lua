@@ -57,14 +57,6 @@ describe('core.options', function()
     assert.are.same({ x = '1', y = '2', a_b_c = 'hello' }, options({ 'x=1', 'y=2', 'a_b_c=hello' }).config)
   end)
 
-  it('should not allow config items without values', function()
-    assert.is_nil(options({ 'x=', 'all' }))
-  end)
-
-  it('should not allow values without a config item name', function()
-    assert.is_nil(options({ '=1', 'all' }))
-  end)
-
   it('should yield an empty config table if no config items are provided', function()
     assert.are.same({}, options({ 'all' }).config)
   end)
