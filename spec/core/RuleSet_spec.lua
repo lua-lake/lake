@@ -10,11 +10,11 @@ describe('core.RuleSet', function()
     assert.are.same({}, rule_set.rules)
   end)
 
-  it('should start with indirect_dependencies empty', function()
-    assert.are.same({}, rule_set.indirect_dependencies)
+  it('should start with simple_dependencies empty', function()
+    assert.are.same({}, rule_set.simple_dependencies)
   end)
 
-  it('should allow adding a indirect rule', function()
+  it('should allow adding a simple rule', function()
     local builder = load''
 
     rule_set.add_rule('target', 'dep', builder)
@@ -146,22 +146,22 @@ describe('core.RuleSet', function()
     }, rule_set.rules)
   end)
 
-  it('should allow adding a indirect dependencies', function()
-    rule_set.add_indirect_dependency('target1', { 'dep1', 'dep2', 'dep3' })
-    rule_set.add_indirect_dependency('target2', { 'dep4', 'dep5' })
+  it('should allow adding a simple dependencies', function()
+    rule_set.add_simple_dependency('target1', { 'dep1', 'dep2', 'dep3' })
+    rule_set.add_simple_dependency('target2', { 'dep4', 'dep5' })
 
     assert.are.same({
       target1 = { 'dep1', 'dep2', 'dep3' },
       target2 = { 'dep4', 'dep5' }
-    }, rule_set.indirect_dependencies)
+    }, rule_set.simple_dependencies)
   end)
 
-  it('should append to indirect dependencies when the same target is used', function()
-    rule_set.add_indirect_dependency('target', { 'dep1', 'dep2', 'dep3' })
-    rule_set.add_indirect_dependency('target', { 'dep4', 'dep5' })
+  it('should append to simple dependencies when the same target is used', function()
+    rule_set.add_simple_dependency('target', { 'dep1', 'dep2', 'dep3' })
+    rule_set.add_simple_dependency('target', { 'dep4', 'dep5' })
 
     assert.are.same({
       target = { 'dep1', 'dep2', 'dep3', 'dep4', 'dep5' }
-    }, rule_set.indirect_dependencies)
+    }, rule_set.simple_dependencies)
   end)
 end)

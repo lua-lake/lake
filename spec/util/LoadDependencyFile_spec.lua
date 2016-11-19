@@ -25,7 +25,7 @@ describe('util.LoadDependencyFile', function()
 
     load_dependency_file('abc')
 
-    assert.are.same({}, rule_set.indirect_dependencies)
+    assert.are.same({}, rule_set.simple_dependencies)
   end)
 
   it('should successfully load a file with a single, simple rule', function()
@@ -39,7 +39,7 @@ hello.c: hello.h
 
     assert.are.same({
       ['hello.c'] = { 'hello.h' }
-    }, rule_set.indirect_dependencies)
+    }, rule_set.simple_dependencies)
   end)
 
   it('should successfully load a file with a single rule', function()
@@ -53,7 +53,7 @@ hello.c: hello.h goodbye.h
 
     assert.are.same({
       ['hello.c'] = { 'hello.h', 'goodbye.h' }
-    }, rule_set.indirect_dependencies)
+    }, rule_set.simple_dependencies)
   end)
 
   it('should successfully load a file with multiple rules', function()
@@ -70,7 +70,7 @@ goodbye.c: goodbye.h foo.h
     assert.are.same({
       ['hello.c'] = { 'hello.h', 'goodbye.h' },
       ['goodbye.c'] = { 'goodbye.h', 'foo.h' }
-    }, rule_set.indirect_dependencies)
+    }, rule_set.simple_dependencies)
   end)
 
   it('should successfully load a file with line continuations', function()
@@ -91,7 +91,7 @@ goodbye.c: \
     assert.are.same({
       ['hello.c'] = { 'hello.h', 'goodbye.h', 'foo.h' },
       ['goodbye.c'] = { 'goodbye.h', 'foo.h' }
-    }, rule_set.indirect_dependencies)
+    }, rule_set.simple_dependencies)
   end)
 
   it('should ignore missing files', function()
@@ -99,6 +99,6 @@ goodbye.c: \
 
     load_dependency_file('deps.d')
 
-    assert.are.same({}, rule_set.indirect_dependencies)
+    assert.are.same({}, rule_set.simple_dependencies)
   end)
 end)

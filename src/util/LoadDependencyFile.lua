@@ -8,7 +8,7 @@ return function(rule_set)
       for dependency in dependency_list:gmatch('%S+') do
         table.insert(dependencies, dependency)
       end
-      rule_set.add_indirect_dependency(target, dependencies)
+      rule_set.add_simple_dependency(target, dependencies)
     end
   end
 end
