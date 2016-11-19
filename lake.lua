@@ -4,10 +4,11 @@ return function(args)
   local TreeBuilder = require './src/core/TreeBuilder'
   local JobQueue = require './src/core/JobQueue'
 
-  local options = require './src/core/options'(args)
+  local option_parser = require './src/core/options'
+  local options = option_parser(args)
 
   if not options then
-    print(options.usage)
+    print(option_parser.usage)
     return
   end
 
