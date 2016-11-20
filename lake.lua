@@ -16,20 +16,18 @@ return function(args)
   local job_queue = JobQueue(options.job_count)
 
   local function run(target)
-    coroutine.wrap(function()
-      local tree = Tree(target, rule_set.rules, rule_set.simple_dependencies)
+    local tree = Tree(target, rule_set.rules, rule_set.simple_dependencies)
 
-      if not tree then
-        print('error: no recipe for building target "' .. target .. '"')
-        return
-      end
+    if not tree then
+      print('error: no recipe for building target "' .. target .. '"')
+      return
+    end
 
-      if tree.complete then
-        print('nothing to be done for target "' .. target .. '"')
-      end
+    if tree.complete then
+      print('nothing to be done for target "' .. target .. '"')
+    end
 
-      TreeBuilder(job_queue).build(tree)
-    end)()
+    TreeBuilder(job_queue).build(tree)
   end
 
   local lakefile = loadfile(options.lakefile)
