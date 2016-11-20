@@ -435,6 +435,30 @@ describe('core.Tree', function()
     }, tree)
   end)
 
+  it('should build an incomplete tree for a target that does not exist and has simple dependencies', function()
+    files = {
+      bar = { mtime = { sec = 2, nsec = 0 }, type = 'file' },
+      baz = { mtime = { sec = 4, nsec = 0 }, type = 'file' }
+    }
+
+    local rules = {
+      { target = 'foo', deps = { 'bar' } }
+    }
+
+    local simple_dependencies = {
+      foo = { 'baz' }
+    }
+
+    local tree = Tree('foo', rules, simple_dependencies)
+
+    assert.are.same({
+      target = 'foo',
+      match = 'foo',
+      rule = rules[1],
+      deps = {}
+    }, tree)
+  end)
+
   it('should build a complete tree for a target that is up-to-date with a simple dependency', function()
     files = {
       foo = { mtime = { sec = 3, nsec = 0 }, type = 'file' },

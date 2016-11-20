@@ -17,19 +17,32 @@ return function(job_queue)
     end
   end
 
-  local function build_tree(tree)
-    if tree.scheduled or tree.complete then return end
+  local function build_tree(tree, on_complete)
+    on_complete = on_complete or load''
+
+    if tree.scheduled then return end
+    if tree.complete then
+      on_complete()
+      return
+    end
 
     tree.scheduled = true
 
     local todo_dep_count = 0
     local deps_to_build = {}
 
+    local function execute_if_deps_complete()
+      if todo_dep_count == 0 then
+        job_queue.schedule(function()
+          execute(tree)
+          on_complete()
+        end)
+      end
+    end
+
     local function dep_completed()
       todo_dep_count = todo_dep_count - 1
-      if todo_dep_count == 0 then
-        execute(tree)
-      end
+      execute_if_deps_complete()
     end
 
     for _, dep in ipairs(tree.deps) do
@@ -47,9 +60,7 @@ return function(job_queue)
       end)
     end
 
-    if todo_dep_count == 0 then
-      execute(tree)
-    end
+    execute_if_deps_complete()
   end
 
   return {

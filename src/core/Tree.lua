@@ -34,12 +34,6 @@ return function(target, rules, simple_dependencies)
       local match = target:match('^' .. rule.target:gsub('*', '(%%S+)') .. '$')
       local out_of_date = false
 
-      for _, simple_dependency in ipairs(simple_dependencies[target] or {}) do
-        if not exists(simple_dependency) or is_before(target_mtime, mtime(simple_dependency)) then
-          out_of_date = true
-        end
-      end
-
       if match ~= nil then
         local satisfied_all_deps = true
         local all_deps_complete = true
@@ -49,6 +43,14 @@ return function(target, rules, simple_dependencies)
           deps = {},
           match = match
         }
+
+        if target_exists then
+          for _, simple_dependency in ipairs(simple_dependencies[target] or {}) do
+            if not exists(simple_dependency) or is_before(target_mtime, mtime(simple_dependency)) then
+              out_of_date = true
+            end
+          end
+        end
 
         for _, dep in ipairs(rule.deps) do
           local dep = dep:gsub('*', match)

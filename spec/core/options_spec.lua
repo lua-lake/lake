@@ -36,16 +36,16 @@ describe('core.options', function()
   end)
 
   it('should default the target to "all"', function()
-    assert.are.equal('all', options({}).target)
-  end)
-
-  it('should not allow multiple targets', function()
-    assert.is_nil(options({ 'all', 'some' }))
+    assert.are.same({ 'all' }, options({}).targets)
   end)
 
   it('should allow the target to be set', function()
-    assert.are.equal('some', options({ 'some' }).target)
-    assert.are.equal('none', options({ 'none' }).target)
+    assert.are.same({ 'some' }, options({ 'some' }).targets)
+    assert.are.same({ 'none' }, options({ 'none' }).targets)
+  end)
+
+  it('should allow multiple targets', function()
+    assert.are.same({ 'all', 'some' }, options({ 'all', 'some' }).targets)
   end)
 
   it('should not allow undefined arguments', function()
@@ -65,7 +65,7 @@ describe('core.options', function()
     assert.are.same({
       job_count = 8,
       lakefile ='target.lk',
-      target = 'some',
+      targets = { 'some' },
       config = { a = 'hello' }
     }, options({ '-j8', '-f', 'target.lk', 'some', 'a=hello' }))
   end)

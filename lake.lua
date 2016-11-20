@@ -15,7 +15,7 @@ return function(args)
   local rule_set = RuleSet()
   local job_queue = JobQueue(options.job_count)
 
-  local function run(target)
+  local function run(target, on_complete)
     local tree = Tree(target, rule_set.rules, rule_set.simple_dependencies)
 
     if not tree then
@@ -27,7 +27,7 @@ return function(args)
       print('nothing to be done for target "' .. target .. '"')
     end
 
-    TreeBuilder(job_queue).build(tree)
+    TreeBuilder(job_queue).build(tree, on_complete)
   end
 
   local lakefile = loadfile(options.lakefile)
@@ -66,6 +66,14 @@ return function(args)
 
   coroutine.wrap(function()
     setfenv(lakefile, environment)()
-    run(options.target)
+
+    local function run_next()
+      if #options.targets > 0 then
+        local target = table.remove(options.targets, 1)
+        run(target, run_next)
+      end
+    end
+
+    run_next()
   end)()
 end
