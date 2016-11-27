@@ -7,7 +7,8 @@ return setmetatable({
     local options = {
       job_count = 1,
       lakefile = 'Lakefile',
-      config = {}
+      config = {},
+      targets = {}
     }
 
     for k, v in getopt('j:f:', unpack(args)) do
@@ -20,17 +21,14 @@ return setmetatable({
         if config and value then
           options.config[config] = value
         else
-          if options.target then
-            return
-          end
-          options.target = v
+          table.insert(options.targets, v)
         end
       else
         return
       end
     end
 
-    options.target = options.target or 'all'
+    if #options.targets == 0 then options.targets = { 'all' } end
 
     return options
   end

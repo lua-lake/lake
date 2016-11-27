@@ -11,6 +11,7 @@ describe('core.TreeBuilder', function()
   local baz_builder = mach.mock_function('baz_builder')
   local qux_builder = mach.mock_function('qux_builder')
   local pattern_builder = mach.mock_function('pattern_builder')
+  local on_complete = mach.mock_function('on_complete')
 
   local rules
 
@@ -40,6 +41,18 @@ describe('core.TreeBuilder', function()
     end)
   end)
 
+  it('should invoke a provided callback for a completed tree', function()
+    on_complete:should_be_called():when(function()
+      build({
+        target = 'foo',
+        match = 'foo-match',
+        complete = true,
+        rule = rules[1],
+        deps = {}
+      }, on_complete)
+    end)
+  end)
+
   it('should build a tree with no dependencies', function()
     foo_builder:should_be_called_with(match({
       target = 'foo',
@@ -53,6 +66,23 @@ describe('core.TreeBuilder', function()
           rule = rules[1],
           deps = {}
         })
+      end)
+  end)
+
+  it('should invoke a provided callback after an incomplete tree is built', function()
+    foo_builder:should_be_called_with(match({
+      target = 'foo',
+      match = 'foo-match',
+      deps = rules[1].deps
+    })):
+      and_then(on_complete:should_be_called()):
+      when(function()
+        build({
+          target = 'foo',
+          match = 'foo-match',
+          rule = rules[1],
+          deps = {}
+        }, on_complete)
       end)
   end)
 
